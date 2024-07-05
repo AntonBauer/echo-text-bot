@@ -1,31 +1,22 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using EchoTextBot.Cli;
 using Telegram.BotAPI;
-using Telegram.BotAPI.AvailableMethods;
-using Telegram.BotAPI.GettingUpdates;
 
-// get messages
+var cancellationSource = new CancellationTokenSource();
+var token = cancellationSource.Token;
+
 var botToken = "";
+var offset = default(int?);
+
 var client = new TelegramBotClient(botToken);
 
-var updates = await client.GetUpdatesAsync();
-while(true)
+while (true)
 {
-    if (updates.Any())
-    {
-        foreach (var update in updates)
-        {
-            if(update.Message is null) continue;
-            await client.SendMessageAsync(update.Message.Chat.Id, update.Message?.Text ?? "Strange update");
-        }
-
-        var offset = updates.Last().UpdateId + 1;
-        updates = await client.GetUpdatesAsync(offset);
-    }
-    else
-    {
-        updates = await client.GetUpdatesAsync();
-    }
+    var updates = (await client.GetRelevantUpdates(offset, token)).ToArray();
+    offset = updates[^1].UpdateId + 1;
+    await Task.Delay(5000);
 }
+
+// get messages
 // fiilter everything but audio
 
 // convert to format used by whisper
