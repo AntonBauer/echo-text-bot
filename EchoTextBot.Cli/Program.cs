@@ -23,17 +23,13 @@ while (true)
             var filePath = await update.PrepareAudioForDownload(tgClient, cancellationToken);
             var file = await httpClient.DownloadFile(filePath, botToken, cancellationToken);
         }
-        var relevant = allUpdates.Where(UpdateExtensions.IsRelevant).ToArray();
-        offset = allUpdates[^1].UpdateId + 1;
 
+        offset = allUpdates[^1].UpdateId + 1;
         continue;
     }
 
     await Task.Delay(5000);
 }
-
-// get messages
-// fiilter everything but audio
 
 // convert to format used by whisper
 
