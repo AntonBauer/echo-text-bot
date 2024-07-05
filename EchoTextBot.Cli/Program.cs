@@ -1,18 +1,34 @@
 ﻿using EchoTextBot.Cli;
 using Telegram.BotAPI;
+using Telegram.BotAPI.GettingUpdates;
 
 var cancellationSource = new CancellationTokenSource();
-var token = cancellationSource.Token;
+var cancellationToken = cancellationSource.Token;
 
 var botToken = "";
 var offset = default(int?);
 
-var client = new TelegramBotClient(botToken);
+var tgClient = new TelegramBotClient(botToken);
+var httpClient = new HttpClient();
 
 while (true)
 {
-    var updates = (await client.GetRelevantUpdates(offset, token)).ToArray();
-    offset = updates[^1].UpdateId + 1;
+    var allUpdates = (await tgClient.GetUpdatesAsync(offset, cancellationToken: cancellationToken)).ToArray();
+
+    if (allUpdates.Length > 0)
+    {
+        foreach(var update in allUpdates.Where(UpdateExtensions.IsRelevant))
+        {
+            var language = update.ExtractLanguage();
+            var filePath = await update.PrepareAudioForDownload(tgClient, cancellationToken);
+            var file = await httpClient.DownloadFile(filePath, botToken, cancellationToken);
+        }
+        var relevant = allUpdates.Where(UpdateExtensions.IsRelevant).ToArray();
+        offset = allUpdates[^1].UpdateId + 1;
+
+        continue;
+    }
+
     await Task.Delay(5000);
 }
 
