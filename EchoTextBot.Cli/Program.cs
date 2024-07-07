@@ -5,8 +5,10 @@ using Telegram.BotAPI.GettingUpdates;
 var cancellationSource = new CancellationTokenSource();
 var cancellationToken = cancellationSource.Token;
 
-var botToken = "6836029113:AAHwys0NxhqkPWRI41puPtHkS2FBdWXsHss";
+// Environment Data
+var botToken = "";
 var offset = default(int?);
+var fetchInterval = 5000;
 
 var tgClient = new TelegramBotClient(botToken);
 var httpClient = new HttpClient();
@@ -20,13 +22,14 @@ while (true)
         foreach(var update in allUpdates.Where(UpdateExtensions.IsRelevant))
         {
             var data = await tgClient.ExtractData(update, httpClient, botToken, cancellationToken);
+            var converted = await data.Convert();
         }
 
         offset = allUpdates[^1].UpdateId + 1;
         continue;
     }
 
-    await Task.Delay(5000);
+    await Task.Delay(fetchInterval);
 }
 
 // convert to format used by whisper
