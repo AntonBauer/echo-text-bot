@@ -5,7 +5,7 @@ using Telegram.BotAPI.GettingUpdates;
 var cancellationSource = new CancellationTokenSource();
 var cancellationToken = cancellationSource.Token;
 
-var botToken = "";
+var botToken = "6836029113:AAHwys0NxhqkPWRI41puPtHkS2FBdWXsHss";
 var offset = default(int?);
 
 var tgClient = new TelegramBotClient(botToken);
@@ -19,9 +19,7 @@ while (true)
     {
         foreach(var update in allUpdates.Where(UpdateExtensions.IsRelevant))
         {
-            var language = update.ExtractLanguage();
-            var filePath = await update.PrepareAudioForDownload(tgClient, cancellationToken);
-            var file = await httpClient.DownloadFile(filePath, botToken, cancellationToken);
+            var data = await tgClient.ExtractData(update, httpClient, botToken, cancellationToken);
         }
 
         offset = allUpdates[^1].UpdateId + 1;

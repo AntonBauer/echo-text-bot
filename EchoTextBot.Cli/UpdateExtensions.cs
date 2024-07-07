@@ -10,7 +10,21 @@ internal static class UpdateExtensions
         update.Message?.ExternalReply?.Audio is not null
         && !string.IsNullOrEmpty(update.Message.Text);
 
-    public static async Task<string> PrepareAudioForDownload(this Update update,
+    public static async Task<TranscribeData> ExtractData(this TelegramBotClient tgClient,
+                                                         Update update,
+                                                         HttpClient httpClient,
+                                                         string botToken,
+                                                         CancellationToken cancellationToken)
+    {
+        var language = update.ExtractLanguage();
+
+        var filePath = await update.PrepareAudioForDownload(tgClient, cancellationToken);
+        var dataStream = await httpClient.DownloadAudio(filePath, botToken, cancellationToken);
+
+        return new TranscribeData(language, dataStream);
+    }
+
+    private static async Task<string> PrepareAudioForDownload(this Update update,
                                           TelegramBotClient client,
                                           CancellationToken cancellationToken)
     {
@@ -18,18 +32,15 @@ internal static class UpdateExtensions
         return file.FilePath ?? string.Empty;
     }
 
-    public static string ExtractLanguage(this Update update) => update.Message.Text;
+    private static string ExtractLanguage(this Update update) =>
+        update.Message.Text;
 
-    public static async Task<Stream> DownloadFile(this HttpClient client,
-                                                  string filePath,
-                                                  string botToken,
-                                                  CancellationToken cancellationToken)
+    private static async Task<Stream> DownloadAudio(this HttpClient client,
+                                                   string filePath,
+                                                   string botToken,
+                                                   CancellationToken cancellationToken)
     {
-        var url = $"https://api.telegram.org/file/{botToken}/{filePath}";
-        var response = await client.GetAsync(url, cancellationToken);
-        var dataStream = new MemoryStream();
-        await response.Content.CopyToAsync(dataStream, cancellationToken);
-
-        return dataStream;
+        var url = $"https://api.telegram.org/file/bot{botToken}/{filePath}";
+        return await client.GetStreamAsync(url, cancellationToken);
     }
 }
