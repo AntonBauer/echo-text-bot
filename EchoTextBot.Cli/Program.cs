@@ -12,6 +12,7 @@ var offset = default(int?);
 var fetchInterval = 5000;
 var whisperModelPath = "";
 
+// Tools
 var tgClient = new TelegramBotClient(botToken);
 using var httpClient = new HttpClient();
 using var whisperFactory = WhisperFactory.FromPath(whisperModelPath);
@@ -26,7 +27,8 @@ while (true)
         {
             var data = await tgClient.ExtractData(update, httpClient, botToken, cancellationToken);
             var converted = await data.Convert();
-            var transcribed = await converted.Transcribe(whisperFactory, cancellationToken);
+            var transcription = await converted.Transcribe(whisperFactory, cancellationToken);
+            await update.SendResult(tgClient, transcription, cancellationToken);
         }
 
         offset = allUpdates[^1].UpdateId + 1;
