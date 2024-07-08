@@ -11,7 +11,9 @@ internal static class AudioExtensions
 
         await FFMpegArguments
             .FromPipeInput(new StreamPipeSource(data.Data))
-            .OutputToPipe(new StreamPipeSink(convertedData), options => options.ForceFormat("wav"))
+            .OutputToPipe(new StreamPipeSink(convertedData),
+                          options => options.WithAudioSamplingRate(16000)
+                                            .ForceFormat("wav"))
             .ProcessAsynchronously();
 
         return data with { Data = convertedData };
