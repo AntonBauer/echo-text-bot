@@ -15,6 +15,7 @@ internal static class AudioExtensions
                           options => options.WithAudioSamplingRate(16000)
                                             .ForceFormat("wav"))
             .ProcessAsynchronously();
+        convertedData.Seek(0, SeekOrigin.Begin);
 
         return data with { Data = convertedData };
     }

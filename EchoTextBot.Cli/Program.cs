@@ -32,8 +32,6 @@ while (true)
     await Task.Delay(fetchInterval);
 }
 
-// convert to format used by whisper
-
 // transcribe by whisper
 // output to file
 
