@@ -1,6 +1,7 @@
 ﻿using EchoTextBot.Cli;
 using Telegram.BotAPI;
 using Telegram.BotAPI.GettingUpdates;
+using Whisper.net;
 
 var cancellationSource = new CancellationTokenSource();
 var cancellationToken = cancellationSource.Token;
@@ -9,9 +10,11 @@ var cancellationToken = cancellationSource.Token;
 var botToken = "";
 var offset = default(int?);
 var fetchInterval = 5000;
+var whisperModelPath = "";
 
 var tgClient = new TelegramBotClient(botToken);
-var httpClient = new HttpClient();
+using var httpClient = new HttpClient();
+using var whisperFactory = WhisperFactory.FromPath(whisperModelPath);
 
 while (true)
 {
@@ -23,6 +26,7 @@ while (true)
         {
             var data = await tgClient.ExtractData(update, httpClient, botToken, cancellationToken);
             var converted = await data.Convert();
+            var transcribed = await converted.Transcribe(whisperFactory, cancellationToken);
         }
 
         offset = allUpdates[^1].UpdateId + 1;
@@ -31,8 +35,3 @@ while (true)
 
     await Task.Delay(fetchInterval);
 }
-
-// transcribe by whisper
-// output to file
-
-// Answer to original message

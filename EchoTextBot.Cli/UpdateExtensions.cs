@@ -33,7 +33,9 @@ internal static class UpdateExtensions
     }
 
     private static string ExtractLanguage(this Update update) =>
-        update.Message.Text;
+        string.IsNullOrEmpty(update.Message.Text)
+            ? "en"
+            : update.Message.Text;
 
     private static async Task<Stream> DownloadAudio(this HttpClient client,
                                                    string filePath,
