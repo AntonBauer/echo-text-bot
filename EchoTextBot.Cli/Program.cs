@@ -7,15 +7,13 @@ var cancellationSource = new CancellationTokenSource();
 var cancellationToken = cancellationSource.Token;
 
 // Environment Data
-var botToken = "";
-var offset = default(int?);
-var fetchInterval = 5000;
-var whisperModelPath = "";
+var settings = BotSettings.Create();
+var offset = settings.Offset;
 
 // Tools
-var tgClient = new TelegramBotClient(botToken);
+var tgClient = new TelegramBotClient(settings.TgToken);
 using var httpClient = new HttpClient();
-using var whisperFactory = WhisperFactory.FromPath(whisperModelPath);
+using var whisperFactory = WhisperFactory.FromPath(settings.WhisperModelPath);
 
 while (true)
 {
@@ -25,7 +23,7 @@ while (true)
     {
         foreach(var update in allUpdates.Where(UpdateExtensions.IsRelevant))
         {
-            var data = await tgClient.ExtractData(update, httpClient, botToken, cancellationToken);
+            var data = await tgClient.ExtractData(update, httpClient, settings.TgToken, cancellationToken);
             var converted = await data.Convert();
             var transcription = await converted.Transcribe(whisperFactory, cancellationToken);
             await update.SendResult(tgClient, transcription, cancellationToken);
@@ -35,5 +33,5 @@ while (true)
         continue;
     }
 
-    await Task.Delay(fetchInterval);
+    await Task.Delay(settings.FetchIntervalMs);
 }
