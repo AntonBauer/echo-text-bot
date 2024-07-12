@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS Offset(offset integer PRIMARY KEY, timestamp integer NOT NULL);

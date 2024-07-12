@@ -13,8 +13,10 @@ var settings = BotSettings.Create();
 var tgClient = new TelegramBotClient(settings.TgToken);
 using var httpClient = new HttpClient();
 using var whisperFactory = WhisperFactory.FromPath(settings.WhisperModelPath);
+var offsetService = new OffsetService(settings.DbConnectionString);
 
-var offset = default(int?);
+var offset = await offsetService.ReadOffset(cancellationToken);
+
 while (true)
 {
     try
@@ -32,6 +34,7 @@ while (true)
             }
 
             offset = allUpdates[^1].UpdateId + 1;
+            await offsetService.SaveOffset(offset.Value, cancellationToken);
             continue;
         }
     }
