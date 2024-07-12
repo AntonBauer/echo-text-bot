@@ -14,10 +14,10 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Download whisper model
-      run: echo "download complete"
+      run: docker run -it --rm -v ./assets:/models whisper.cpp:main "./models/download-ggml-model.sh base /models"
       
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag echo-text-bot:$(date +%s)
+      run: docker build . --file Dockerfile --tag echo-text-bot:latest --tag echo-text-bot:0.0.${{ github.run_number }}
 
     - name: Push image to GitHub registry
       run: echo "image pushed"
