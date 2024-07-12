@@ -5,6 +5,9 @@ on:
     branches: [ "master" ]
 
   workflow_dispatch:
+
+env:
+  IMAGE_NAME: echo-text-bot
     
 jobs:
   build-publish-bot-image:
@@ -17,7 +20,16 @@ jobs:
       run: docker run -it --rm -v ./assets:/models whisper.cpp:main "./models/download-ggml-model.sh base /models"
       
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag echo-text-bot:latest --tag echo-text-bot:0.0.${{ github.run_number }}
+      run: docker build . --file Dockerfile --tag $IMAGE_NAME --label "runnumber=${{ github.run_number }}"
+      
+    - name: Authenticate against GitHub Container Registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
     - name: Push image to GitHub registry
-      run: echo "image pushed"
+      run: |
+        IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+        IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+        VERSION=0.0.${{ github.run_number }}
+        docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+        docker tag $IMAGE_NAME $IMAGE_ID:latest
+        docker push $IMAGE_ID:$VERSION
