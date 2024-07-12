@@ -17,7 +17,7 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Download whisper model
-      run: docker run -it --rm -v ./assets:/models whisper.cpp:main "./models/download-ggml-model.sh base /models"
+      run: docker run --rm -v ./assets:/models whisper.cpp:main "./models/download-ggml-model.sh base /models"
       
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag $IMAGE_NAME --label "runnumber=${{ github.run_number }}"
