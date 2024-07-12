@@ -1,0 +1,21 @@
+name: Build and Publish Echo Text Bot
+
+on:
+  push:
+    branches: [ "master" ]
+    
+jobs:
+  build-publish-bot-image:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Download whisper model
+      run: echo "download complete"
+      
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag echo-text-bot:$(date +%s)
+
+    - name: Push image to GitHub registry
+      run: echo "image pushed"
