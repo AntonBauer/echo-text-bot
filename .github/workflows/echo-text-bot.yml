@@ -3,6 +3,8 @@ name: Build and Publish Echo Text Bot
 on:
   push:
     branches: [ "master" ]
+
+  workflow_dispatch:
     
 jobs:
   build-publish-bot-image:
