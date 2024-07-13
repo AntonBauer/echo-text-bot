@@ -1,5 +1,8 @@
+using DotNetEnv;
+
 internal readonly record struct BotSettings
 {
+    private const string EnvFilePath = "../assets/.env";
     private const string TgTokenEnvVariable = "ECHO_TEXT_BOT_TG_TOKEN";
     private const string FetchIntervalEnvVariable = "ECHO_TEXT_BOT_FETCH_INTERVAL";
     private const string WhisperModelPathEnvVariable = "ECHO_TEXT_BOT_WHISPER_MODEL_PATH";
@@ -22,6 +25,8 @@ internal readonly record struct BotSettings
 
     public static BotSettings Create()
     {
+        LoadEnv();
+
         var tgToken = Environment.GetEnvironmentVariable(TgTokenEnvVariable) ?? string.Empty;
         var offset = default(int?);
 
@@ -33,5 +38,13 @@ internal readonly record struct BotSettings
         var whisperModelPath = Environment.GetEnvironmentVariable(WhisperModelPathEnvVariable) ?? string.Empty;
         
         return new(tgToken, offset, fetchInterval, whisperModelPath);
+    }
+
+    private static void LoadEnv()
+    {
+        if(!File.Exists(EnvFilePath))
+            return;
+
+        Env.Load(EnvFilePath);
     }
 }

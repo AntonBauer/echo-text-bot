@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="3.0.0" />
     <PackageReference Include="FFMpegCore" Version="5.1.0" />
     <PackageReference Include="Telegram.BotAPI" Version="7.6.0" />
     <PackageReference Include="Whisper.net" Version="1.5.0" />
