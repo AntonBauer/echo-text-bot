@@ -1,5 +1,7 @@
 using DotNetEnv;
 
+namespace EchoTextBot.Cli.Models;
+
 internal readonly record struct BotSettings
 {
     private const string EnvFilePath = "../assets/.env";
@@ -45,7 +47,7 @@ internal readonly record struct BotSettings
 
     private static void LoadEnv()
     {
-        if(!File.Exists(EnvFilePath))
+        if (!File.Exists(EnvFilePath))
             return;
 
         Env.Load(EnvFilePath);

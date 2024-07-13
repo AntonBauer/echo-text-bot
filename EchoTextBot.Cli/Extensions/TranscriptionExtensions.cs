@@ -1,7 +1,8 @@
 using System.Text;
+using EchoTextBot.Cli.Models;
 using Whisper.net;
 
-namespace EchoTextBot.Cli;
+namespace EchoTextBot.Cli.Extensions;
 
 internal static class TranscriptionExtensions
 {
@@ -15,7 +16,7 @@ internal static class TranscriptionExtensions
                                                     .WithLanguage(data.Language)
                                                     .Build();
 
-        await foreach(var output in transcriber.ProcessAsync(data.Data, cancellationToken))
+        await foreach (var output in transcriber.ProcessAsync(data.Data, cancellationToken))
             stringBuilder.AppendLine(output.Text);
 
         return stringBuilder.ToString();

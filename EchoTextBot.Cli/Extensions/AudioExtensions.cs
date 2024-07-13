@@ -1,7 +1,8 @@
+using EchoTextBot.Cli.Models;
 using FFMpegCore;
 using FFMpegCore.Pipes;
 
-namespace EchoTextBot.Cli;
+namespace EchoTextBot.Cli.Extensions;
 
 internal static class AudioExtensions
 {
