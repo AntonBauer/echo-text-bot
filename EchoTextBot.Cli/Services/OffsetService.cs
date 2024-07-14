@@ -1,6 +1,6 @@
 using Microsoft.Data.Sqlite;
 
-namespace EchoTextBot.Cli;
+namespace EchoTextBot.Cli.Services;
 
 internal sealed class OffsetService(string ConnectionString)
 {

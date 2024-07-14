@@ -1,6 +1,6 @@
-﻿using EchoTextBot.Cli;
-using EchoTextBot.Cli.Extensions;
+﻿using EchoTextBot.Cli.Extensions;
 using EchoTextBot.Cli.Models;
+using EchoTextBot.Cli.Services;
 using Telegram.BotAPI;
 using Telegram.BotAPI.GettingUpdates;
 using Whisper.net;
