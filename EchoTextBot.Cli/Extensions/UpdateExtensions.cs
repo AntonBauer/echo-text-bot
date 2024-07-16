@@ -1,10 +1,11 @@
 using System.Text;
+using EchoTextBot.Cli.Models;
 using Telegram.BotAPI;
 using Telegram.BotAPI.AvailableMethods;
 using Telegram.BotAPI.AvailableTypes;
 using Telegram.BotAPI.GettingUpdates;
 
-namespace EchoTextBot.Cli;
+namespace EchoTextBot.Cli.Extensions;
 
 internal static class UpdateExtensions
 {

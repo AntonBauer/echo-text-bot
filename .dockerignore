@@ -5,3 +5,5 @@
 
 # files
 Dockerfile
+**/*.db
+**/*.env
