@@ -9,10 +9,6 @@ namespace EchoTextBot.Cli.Extensions;
 
 internal static class UpdateExtensions
 {
-    public static bool IsRelevant(this Update update) =>
-        update.Message?.ExternalReply?.Audio is not null
-        && !string.IsNullOrEmpty(update.Message.Text);
-
     public static async Task<TranscribeData> ExtractData(this TelegramBotClient tgClient,
                                                          Update update,
                                                          HttpClient httpClient,

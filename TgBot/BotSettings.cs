@@ -1,55 +1,45 @@
-using DotNetEnv;
-
 namespace TgBot;
 
 internal readonly record struct BotSettings
 {
-    private const string EnvFilePath = "../assets/.env";
-    private const string TgTokenEnvVariable = "ECHO_TEXT_BOT_TG_TOKEN";
-    private const string FetchIntervalEnvVariable = "ECHO_TEXT_BOT_FETCH_INTERVAL";
-    private const string WhisperModelPathEnvVariable = "ECHO_TEXT_BOT_WHISPER_MODEL_PATH";
-    private const string DbFilePathEvnVariable = "ECHO_TEXT_BOT_DB_FILE_PATH";
+    private const string TgTokenEnvVariable = "TG_TOKEN";
+    private const string FetchIntervalEnvVariable = "FETCH_INTERVAL";
+    private const string DbFilePathEvnVariable = "OFFSET_DB_FILE_PATH";
 
     public string TgToken { get; }
     public int FetchIntervalMs { get; }
-    public string WhisperModelPath { get; }
     public string DbConnectionString { get; }
 
     private BotSettings(string tgToken,
                         string dbConnectionString,
-                        int fetchIntervalMs,
-                        string whisperModelPath)
+                        int fetchIntervalMs)
     {
         TgToken = tgToken;
         DbConnectionString = dbConnectionString;
         FetchIntervalMs = fetchIntervalMs;
-        WhisperModelPath = whisperModelPath;
     }
 
-    public static BotSettings Create()
+    public static BotSettings Create(string envVariablesNamePrefix) =>
+        new(LoadBotToken(envVariablesNamePrefix),
+            LoadDbConnectionString(envVariablesNamePrefix),
+            LoadFetchInterval(envVariablesNamePrefix));
+
+    private static string LoadBotToken(string envVariablesNamePrefix) =>
+        Environment.GetEnvironmentVariable($"{envVariablesNamePrefix}_{TgTokenEnvVariable}")
+            ?? string.Empty;
+
+    private static int LoadFetchInterval(string envVariablesNamePrefix)
     {
-        LoadEnv();
-
-        var tgToken = Environment.GetEnvironmentVariable(TgTokenEnvVariable) ?? string.Empty;
-
-        var fetchIntervalRaw = Environment.GetEnvironmentVariable(FetchIntervalEnvVariable);
-        var fetchInterval = string.IsNullOrEmpty(fetchIntervalRaw)
+        var fetchIntervalRaw = Environment.GetEnvironmentVariable($"{envVariablesNamePrefix}_{FetchIntervalEnvVariable}");
+        return string.IsNullOrEmpty(fetchIntervalRaw)
             ? 5000
             : int.Parse(fetchIntervalRaw);
-
-        var whisperModelPath = Environment.GetEnvironmentVariable(WhisperModelPathEnvVariable) ?? string.Empty;
-
-        var dbFilePath = Environment.GetEnvironmentVariable(DbFilePathEvnVariable) ?? string.Empty;
-        var dbConnectionString = $"Data Source={dbFilePath}";
-
-        return new(tgToken, dbConnectionString, fetchInterval, whisperModelPath);
     }
 
-    private static void LoadEnv()
+    private static string LoadDbConnectionString(string envVariablesNamePrefix)
     {
-        if (!File.Exists(EnvFilePath))
-            return;
-
-        Env.Load(EnvFilePath);
+        var dbFilePath = Environment.GetEnvironmentVariable($"{envVariablesNamePrefix}_{DbFilePathEvnVariable}")
+            ?? string.Empty;
+        return $"Data Source={dbFilePath}";
     }
 }

@@ -12,14 +12,14 @@ public sealed class TelegramBot
     private readonly OffsetService _offsetService;
 
     private readonly Func<Update, bool> _isUpdateRelevant;
-    private readonly Func<Update, Task> _updateProcessor;
+    private readonly Func<Update, CancellationToken, Task> _updateProcessor;
 
     private TelegramBot(TelegramBotClient tgClient,
                         BotSettings settings,
                         HttpClient httpClient,
                         OffsetService offsetService,
                         Func<Update, bool> isUpdateRelevant,
-                        Func<Update, Task> updateProcessor)
+                        Func<Update, CancellationToken, Task> updateProcessor)
     {
         _tgClient = tgClient;
         _settings = settings;
@@ -29,10 +29,11 @@ public sealed class TelegramBot
         _updateProcessor = updateProcessor;
     }
 
-    public static TelegramBot Create(Func<Update, bool> isUpdateRelevant,
-                                     Func<Update, Task> updateProcessor)
+    public static TelegramBot Create(string envVariablesPrefix,
+                                     Func<Update, bool> isUpdateRelevant,
+                                     Func<Update, CancellationToken, Task> updateProcessor)
     {
-        var settings = BotSettings.Create();
+        var settings = BotSettings.Create(envVariablesPrefix);
         var tgClient = new TelegramBotClient(settings.TgToken);
         var httpClient = new HttpClient();
         var offsetService = new OffsetService(settings.DbConnectionString);
@@ -55,9 +56,7 @@ public sealed class TelegramBot
             if (allUpdates.Length > 0)
             {
                 foreach (var update in allUpdates.Where(_isUpdateRelevant))
-                {
-                    await _updateProcessor(update);
-                }
+                    await _updateProcessor(update, cancellationToken);
 
                 offset = allUpdates[^1].UpdateId + 1;
                 await _offsetService.SaveOffset(offset.Value, cancellationToken);
