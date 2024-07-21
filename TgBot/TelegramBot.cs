@@ -1,3 +1,7 @@
+using Telegram.BotAPI;
+using Telegram.BotAPI.GettingUpdates;
+using TgBot.Services;
+
 namespace TgBot;
 
 public sealed class TelegramBot
@@ -38,7 +42,7 @@ public sealed class TelegramBot
                    httpClient,
                    offsetService,
                    isUpdateRelevant,
-                   isUpdateRelevant);
+                   updateProcessor);
     }
 
     public async Task Run(CancellationToken cancellationToken)
@@ -66,5 +70,5 @@ public sealed class TelegramBot
 
     private async Task<Update[]> LoadUpdates(int? offset,
                                              CancellationToken cancellationToken) =>
-        (await tgClient.GetUpdatesAsync(offset, cancellationToken: cancellationToken)).ToArray();
+        (await _tgClient.GetUpdatesAsync(offset, cancellationToken: cancellationToken)).ToArray();
 }

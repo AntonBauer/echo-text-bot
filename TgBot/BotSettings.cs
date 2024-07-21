@@ -1,6 +1,6 @@
 using DotNetEnv;
 
-namespace EchoTextBot.Cli.Models;
+namespace TgBot;
 
 internal readonly record struct BotSettings
 {
