@@ -4,7 +4,7 @@ using TgBot;
 using DotNetEnv;
 using EchoTextBot.Cli;
 
-const string EnvFilePath = "../assets/";
+const string EnvFilePath = "./../assets/.env";
 const string envVariablesPrefix = "ECHO_TEXT_BOT";
 var cancellationSource = new CancellationTokenSource();
 var cancellationToken = cancellationSource.Token;
