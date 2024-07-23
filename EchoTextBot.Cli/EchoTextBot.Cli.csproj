@@ -8,12 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetEnv" Version="3.0.0" />
     <PackageReference Include="FFMpegCore" Version="5.1.0" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.7" />
     <PackageReference Include="Telegram.BotAPI" Version="7.6.0" />
     <PackageReference Include="Whisper.net" Version="1.5.0" />
     <PackageReference Include="Whisper.net.Runtime" Version="1.5.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TgBot\TgBot.csproj" />
+  </ItemGroup>
+
+  <Target Condition=" '$(Configuration)' == 'Debug' " Name="CopyCustomContent" AfterTargets="AfterBuild">
+    <Copy SourceFiles="../assets/.env" DestinationFolder="$(OutDir)" />
+  </Target>
 
 </Project>
